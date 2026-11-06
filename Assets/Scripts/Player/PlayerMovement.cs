@@ -9,9 +9,20 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController characterController;
     private float verticalSpeed;
 
-    private void Start()
+    private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+    }
+
+    public void Teleport(Vector3 capsuleCenter, Quaternion turn)
+    {
+        Quaternion rotation = turn * transform.rotation;
+        Vector3 centerOffset = Vector3.Scale(characterController.center, transform.lossyScale);
+
+        characterController.enabled = false;
+        transform.SetPositionAndRotation(capsuleCenter - rotation * centerOffset, rotation);
+        verticalSpeed = 0f;
+        characterController.enabled = true;
     }
 
     private void Update()
