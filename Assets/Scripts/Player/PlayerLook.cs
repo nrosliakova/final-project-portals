@@ -8,7 +8,7 @@ public class PlayerLook : MonoBehaviour
 
     private float verticalRotation;
 
-    private void Start()
+    private void OnEnable()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -16,6 +16,16 @@ public class PlayerLook : MonoBehaviour
 
     private void Update()
     {
+        if (Keyboard.current != null && Keyboard.current.leftAltKey.isPressed)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         if (Mouse.current == null || playerCamera == null)
         {
             return;
