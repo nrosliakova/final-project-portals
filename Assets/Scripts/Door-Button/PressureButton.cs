@@ -13,8 +13,6 @@ namespace Door_Button
         [SerializeField] private Vector3 boxOffset = new(0, 0.15f, 0);
         [SerializeField] private Vector3 boxSize = new(1, 0.3f, 1);
         [SerializeField] private LayerMask detectionLayers = ~0;
-        [SerializeField] private float releaseDelay = 0.2f;
-        private float timeWithoutWeight;
 
         [Header("Movement")]
         [SerializeField] private float pressDepth = 0.1f;
