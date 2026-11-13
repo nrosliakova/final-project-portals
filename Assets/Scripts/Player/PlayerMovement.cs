@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float jumpSpeed = 5f;
     [SerializeField] private float gravity = -9.81f;
-
     private CharacterController characterController;
     private float verticalSpeed;
 
@@ -62,6 +62,11 @@ public class PlayerMovement : MonoBehaviour
         if (characterController.isGrounded && verticalSpeed < 0)
         {
             verticalSpeed = -2f;
+        }
+
+        if (characterController.isGrounded && Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            verticalSpeed = jumpSpeed;
         }
 
         verticalSpeed += gravity * Time.deltaTime;
