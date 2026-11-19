@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 // Optional Week 1 task for the Level_1_Bonus_PortalRelocation scene
-[RequireComponent(typeof(Portal), typeof(BoxCollider))]
+[RequireComponent(typeof(PortalEndpoint), typeof(BoxCollider))]
 public class BonusPortalRelocation : MonoBehaviour
 {
     [Header("Bonus: portal relocation (M)")]

@@ -2,15 +2,18 @@ using UnityEngine;
 
 public class PortalPair : MonoBehaviour
 {
-    [SerializeField] private Portal bluePortal;
-    [SerializeField] private Portal orangePortal;
+    [SerializeField] private PortalEndpoint bluePortal;
+    [SerializeField] private PortalEndpoint orangePortal;
+
+    public PortalEndpoint BluePortal => bluePortal;
+    public PortalEndpoint OrangePortal => orangePortal;
 
     private void Awake()
     {
         SetPortals(bluePortal, orangePortal);
     }
 
-    public void SetPortals(Portal blue, Portal orange)
+    public void SetPortals(PortalEndpoint blue, PortalEndpoint orange)
     {
         if (bluePortal != null && bluePortal.Pair == this)
         {
@@ -36,14 +39,14 @@ public class PortalPair : MonoBehaviour
         }
     }
 
-    internal Portal GetDestination(Portal source)
+    internal PortalEndpoint GetDestination(PortalEndpoint source)
     {
         if (!isActiveAndEnabled)
         {
             return null;
         }
 
-        Portal destination = source == bluePortal ? orangePortal : bluePortal;
+        PortalEndpoint destination = source == bluePortal ? orangePortal : bluePortal;
         return destination != null && destination != source && destination.Pair == this &&
             destination.isActiveAndEnabled ? destination : null;
     }
