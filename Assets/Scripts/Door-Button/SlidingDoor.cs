@@ -2,22 +2,15 @@
 
 namespace Door_Button
 {
-
-    public class SlidingDoor : MonoBehaviour, IActivatable
+    public class SlidingDoor : MonoBehaviour
     {
         [SerializeField] private Rigidbody left;
         [SerializeField] private Rigidbody right;
-        [SerializeField] private bool isOpen;
+        [SerializeField] private DoorInput[] inputs;
         [SerializeField] private float openDistance = 1.5f;
         [SerializeField] private float speed = 2f;
-        
-        [Header("Door indicator")]
-        [SerializeField] private Renderer indicator;
-        [SerializeField] private Color openColor = Color.green;
-        [SerializeField] private Color closedColor = Color.red;
 
-        private MaterialPropertyBlock propertyBlock;
-
+        private bool isOpen;
         private Vector3 leftClosed;
         private Vector3 rightClosed;
 
@@ -25,13 +18,20 @@ namespace Door_Button
         {
             leftClosed = left.transform.localPosition;
             rightClosed = right.transform.localPosition;
-            UpdateIndicator();
+            RefreshInputs();
         }
 
-        public void SetActive(bool active)
+        public void RefreshInputs()
         {
-            isOpen = active;
-            UpdateIndicator();
+            isOpen = inputs != null && inputs.Length > 0;
+
+            if (isOpen)
+                foreach (DoorInput input in inputs)
+                    if (input == null || !input.IsActive)
+                    {
+                        isOpen = false;
+                        break;
+                    }
         }
 
         private void FixedUpdate()
@@ -48,16 +48,5 @@ namespace Door_Button
 
             body.MovePosition(next);
         }
-        
-        private void UpdateIndicator()
-        {
-            if (indicator == null) return;
-
-            propertyBlock ??= new MaterialPropertyBlock();
-            indicator.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetColor("_BaseColor", isOpen ? openColor : closedColor);
-            indicator.SetPropertyBlock(propertyBlock);
-        }
     }
-
 }

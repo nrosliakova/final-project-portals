@@ -21,7 +21,6 @@ namespace Door_Button
         private IActivatable activatable;
         private Vector3 initialPosition;
         private bool isPressed;
-        private bool isActive;
 
         private readonly HashSet<Rigidbody> detectedBodies = new();
 
@@ -29,6 +28,7 @@ namespace Door_Button
         {
             activatable = target as IActivatable;
             initialPosition = body.position;
+            activatable?.SetActive(false);
         }
 
         private void FixedUpdate()
@@ -61,13 +61,10 @@ namespace Door_Button
                 Debug.Log("Weight: " + weight);
             }
 
-            bool pressedNow = weight > minWeight;
+            bool pressedNow = weight >= minWeight;
 
-            if (pressedNow && !isPressed)
-            {
-                isActive = !isActive;
-                activatable?.SetActive(isActive);
-            }
+            if (pressedNow != isPressed)
+                activatable?.SetActive(pressedNow);
 
             isPressed = pressedNow;
 

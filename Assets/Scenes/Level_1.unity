@@ -970,6 +970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
+  jumpSpeed: 5
   gravity: -9.81
 --- !u!114 &571112916
 MonoBehaviour:
@@ -16073,7 +16074,7 @@ PrefabInstance:
       objectReference: {fileID: 1238698949}
     - target: {fileID: 765565748464049877, guid: 77ff5940919de7c459e6444dff7dd6e3, type: 3}
       propertyPath: m_VersionIndex
-      value: 2620
+      value: 2623
       objectReference: {fileID: 0}
     - target: {fileID: 1755554966704251305, guid: 77ff5940919de7c459e6444dff7dd6e3, type: 3}
       propertyPath: m_Mesh
@@ -16085,7 +16086,7 @@ PrefabInstance:
       objectReference: {fileID: 1002436272}
     - target: {fileID: 2221128159193122572, guid: 77ff5940919de7c459e6444dff7dd6e3, type: 3}
       propertyPath: m_VersionIndex
-      value: 12028
+      value: 12031
       objectReference: {fileID: 0}
     - target: {fileID: 2332018948714534414, guid: 77ff5940919de7c459e6444dff7dd6e3, type: 3}
       propertyPath: m_Mesh
@@ -16218,7 +16219,7 @@ PrefabInstance:
       objectReference: {fileID: 527422617}
     - target: {fileID: 8373972720738925310, guid: 03c3cc237cc43ec479c211a463f34174, type: 3}
       propertyPath: m_VersionIndex
-      value: 2862
+      value: 2865
       objectReference: {fileID: 0}
     - target: {fileID: 9188769278002386775, guid: 03c3cc237cc43ec479c211a463f34174, type: 3}
       propertyPath: m_Mesh
@@ -16226,7 +16227,7 @@ PrefabInstance:
       objectReference: {fileID: 908436712}
     - target: {fileID: 9188769278002386775, guid: 03c3cc237cc43ec479c211a463f34174, type: 3}
       propertyPath: m_VersionIndex
-      value: 5242
+      value: 5245
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
