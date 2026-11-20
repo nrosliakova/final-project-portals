@@ -25,6 +25,11 @@ public class PlayerMovement : MonoBehaviour
         characterController.enabled = true;
     }
 
+    public void ResetVerticalSpeed()
+    {
+        verticalSpeed = 0f;
+    }
+
     private void Update()
     {
         MovePlayer();

@@ -32,6 +32,8 @@ public class PlayerReset : MonoBehaviour
 
         transform.position = startPosition;
         transform.rotation = startRotation;
+        GetComponent<PlayerMovement>().ResetVerticalSpeed();
+        GetComponent<PlayerLook>().ResetLook();
 
         if (characterController != null)
         {
