@@ -7,11 +7,20 @@ public class PlayerLook : MonoBehaviour
     [SerializeField] private float sensitivity = 0.1f;
 
     private float verticalRotation;
+    private float startVerticalRotation;
 
     private void OnEnable()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    private void Start()
+    {
+        if (playerCamera == null) return;
+
+        startVerticalRotation = Mathf.DeltaAngle(0f, playerCamera.localEulerAngles.x);
+        verticalRotation = startVerticalRotation;
     }
 
     private void Update()
@@ -45,5 +54,15 @@ public class PlayerLook : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
+
+    public void ResetLook()
+    {
+        verticalRotation = startVerticalRotation;
+
+        if (playerCamera != null)
+        {
+            playerCamera.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+        }
     }
 }
