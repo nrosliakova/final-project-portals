@@ -65,6 +65,8 @@ public sealed class PortalPlacementService : MonoBehaviour
 
     private Pose initialBluePose;
     private Pose initialOrangePose;
+    private bool initialBlueActive;
+    private bool initialOrangeActive;
     private bool initialized;
 
     public PortalPair ControlledPair => controlledPair;
@@ -90,6 +92,8 @@ public sealed class PortalPlacementService : MonoBehaviour
 
         initialBluePose = new Pose(blue.transform.position, blue.transform.rotation);
         initialOrangePose = new Pose(orange.transform.position, orange.transform.rotation);
+        initialBlueActive = blue.gameObject.activeSelf;
+        initialOrangeActive = orange.gameObject.activeSelf;
         RegisterInitialSurface(blue, initialBlueSurface);
         RegisterInitialSurface(orange, initialOrangeSurface);
         initialized = true;
@@ -164,6 +168,7 @@ public sealed class PortalPlacementService : MonoBehaviour
         portal.transform.SetPositionAndRotation(check.Pose.position, check.Pose.rotation);
         portalSurfaces[portal] = surface;
         occupiedSurfaces[surface] = portal;
+        portal.gameObject.SetActive(true);
         Physics.SyncTransforms();
         return check;
     }
@@ -180,6 +185,8 @@ public sealed class PortalPlacementService : MonoBehaviour
         PortalEndpoint orange = controlledPair.OrangePortal;
         blue.transform.SetPositionAndRotation(initialBluePose.position, initialBluePose.rotation);
         orange.transform.SetPositionAndRotation(initialOrangePose.position, initialOrangePose.rotation);
+        blue.gameObject.SetActive(initialBlueActive);
+        orange.gameObject.SetActive(initialOrangeActive);
 
         occupiedSurfaces.Clear();
         portalSurfaces.Clear();
