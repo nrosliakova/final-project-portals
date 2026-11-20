@@ -108,5 +108,13 @@ namespace Player
             }
         }
 
+        private void OnDisable()
+        {
+            if (hintPanel != null)
+            {
+                hintPanel.SetActive(false);
+            }
+        }
+
     }
 }

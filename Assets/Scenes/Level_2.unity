@@ -4371,6 +4371,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 571112918}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 571112919}
   m_SourcePrefab: {fileID: 100100000, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
 --- !u!1 &571112911 stripped
 GameObject:
@@ -4466,6 +4469,18 @@ MonoBehaviour:
   maxSpeed: 6
   hintPanel: {fileID: 1936847479}
   hintText: {fileID: 1109015478}
+--- !u!114 &571112919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571112911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0261912ed029ea14c94e729bd7c9e881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerGameplayControls
 --- !u!1001 &591588282
 PrefabInstance:
   m_ObjectHideFlags: 0
