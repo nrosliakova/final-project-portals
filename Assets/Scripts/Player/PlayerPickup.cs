@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using Door_Button;
+using TMPro;
 
 namespace Player
 {
@@ -10,6 +11,8 @@ namespace Player
         [SerializeField] private float pickupDistance = 3f;
         [SerializeField] private float holdDistance = 2f;
         [SerializeField] private float maxSpeed = 6f;
+        [SerializeField] private GameObject hintPanel;
+        [SerializeField] private TMP_Text hintText;
 
         private PickupObject heldObject;
         private CharacterController controller;
@@ -21,6 +24,8 @@ namespace Player
 
         private void Update()
         {
+            UpdateHint();
+
             if (Keyboard.current == null || !Keyboard.current.eKey.wasPressedThisFrame)
                 return;
 
@@ -67,6 +72,40 @@ namespace Player
             target.y = Mathf.Max(target.y, minHeight);
 
             heldObject.MoveTo(target, maxSpeed);
+        }
+
+        public void DropHeldObject()
+        {
+            if (heldObject == null) return;
+
+            heldObject.SetHeld(false);
+            heldObject = null;
+        }
+
+        private void UpdateHint()
+        {
+            if (hintPanel == null || hintText == null || playerCamera == null) return;
+
+            if (heldObject != null)
+            {
+                hintPanel.SetActive(true);
+                hintText.text = "TO DROP AN OBJECT";
+                return;
+            }
+
+            bool canPickUp = Physics.Raycast(
+                playerCamera.transform.position,
+                playerCamera.transform.forward,
+                out RaycastHit hit,
+                pickupDistance
+            ) && hit.collider.TryGetComponent(out PickupObject cube);
+
+            hintPanel.SetActive(canPickUp);
+
+            if (canPickUp)
+            {
+                hintText.text = "TO PICK UP AN OBJECT";
+            }
         }
 
     }

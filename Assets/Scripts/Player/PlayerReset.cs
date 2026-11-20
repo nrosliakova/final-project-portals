@@ -25,6 +25,8 @@ public class PlayerReset : MonoBehaviour
 
     private void ResetPlayer()
     {
+        GetComponent<Player.PlayerPickup>()?.DropHeldObject();
+
         if (characterController != null)
         {
             characterController.enabled = false;
