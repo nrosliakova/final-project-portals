@@ -1487,12 +1487,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Door_Button.SlidingDoor
   left: {fileID: 1798466977}
   right: {fileID: 2019405515}
-  isOpen: 0
+  inputs: []
   openDistance: 1.5
   speed: 2
-  indicator: {fileID: 974266167}
-  openColor: {r: 0.67058825, g: 0.41960788, b: 0.14901961, a: 1}
-  closedColor: {r: 0.08627451, g: 0.14117648, b: 0.6862745, a: 1}
 --- !u!1 &974266163
 GameObject:
   m_ObjectHideFlags: 0
