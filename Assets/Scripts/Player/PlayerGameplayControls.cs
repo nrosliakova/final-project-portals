@@ -7,6 +7,7 @@ public class PlayerGameplayControls : MonoBehaviour
     private PlayerLook look;
     private PlayerReset playerReset;
     private PlayerPickup pickup;
+    private PortalPlacementInput portalPlacement;
 
     private void Awake()
     {
@@ -14,6 +15,7 @@ public class PlayerGameplayControls : MonoBehaviour
         look = GetComponent<PlayerLook>();
         playerReset = GetComponent<PlayerReset>();
         pickup = GetComponent<PlayerPickup>();
+        portalPlacement = GetComponent<PortalPlacementInput>();
     }
 
     [ContextMenu("Disable Gameplay")]
@@ -28,6 +30,7 @@ public class PlayerGameplayControls : MonoBehaviour
         if (movement != null) movement.enabled = false;
         if (playerReset != null) playerReset.enabled = false;
         if (look != null) look.enabled = false;
+        if (portalPlacement != null) portalPlacement.enabled = false;
     }
 
     [ContextMenu("Enable Gameplay")]
@@ -36,6 +39,7 @@ public class PlayerGameplayControls : MonoBehaviour
         if (movement != null) movement.enabled = true;
         if (playerReset != null) playerReset.enabled = true;
         if (pickup != null) pickup.enabled = true;
+        if (portalPlacement != null) portalPlacement.enabled = true;
         if (look != null) look.enabled = true;
     }
 }

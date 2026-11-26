@@ -42,24 +42,12 @@ public sealed class PortalPlacementInput : MonoBehaviour
 
     public PortalPlacementCheck TryPlace(PortalSlot slot)
     {
-        if (placementService == null || !TryGetAimedSurface(out PortalPlacementSurface surface))
+        if (placementService == null || !TryGetAimHit(out RaycastHit hit))
         {
             return PortalPlacementCheck.Invalid(default, PortalPlacementFailure.MissingSurface);
         }
 
-        return placementService.TryPlace(slot, surface);
-    }
-
-    public bool TryGetAimedSurface(out PortalPlacementSurface surface)
-    {
-        surface = null;
-        if (!TryGetAimHit(out RaycastHit hit))
-        {
-            return false;
-        }
-
-        surface = hit.collider.GetComponentInParent<PortalPlacementSurface>();
-        return surface != null;
+        return placementService.TryPlace(slot, hit);
     }
 
     public bool TryGetAimHit(out RaycastHit hit)

@@ -12,35 +12,25 @@ public sealed class PortalPlacementPreview : MonoBehaviour
 
     private void Update()
     {
-        if (placementInput == null || !placementInput.TryGetAimHit(out RaycastHit hit))
+        if (placementInput == null || !placementInput.isActiveAndEnabled ||
+            placementInput.PlacementService == null || !placementInput.TryGetAimHit(out RaycastHit hit))
         {
             SetVisible(false);
             return;
         }
 
-        PortalPlacementSurface surface = hit.collider.GetComponentInParent<PortalPlacementSurface>();
-        bool isValid = false;
-        Pose pose;
-
-        if (surface != null && placementInput.PlacementService != null)
-        {
-            PortalPlacementCheck check = placementInput.PlacementService.CheckPlacement(
-                placementInput.ActiveSlot,
-                surface);
-            pose = check.Pose;
-            isValid = check.IsValid;
-        }
-        else
-        {
-            pose = GetInvalidSurfacePose(hit);
-        }
+        PortalPlacementCheck check = placementInput.PlacementService.CheckPlacement(
+            placementInput.ActiveSlot, hit);
 
         if (previewTransform != null)
         {
-            previewTransform.SetPositionAndRotation(pose.position, pose.rotation);
+            Vector3 position = check.Failure == PortalPlacementFailure.MissingSurface
+                ? hit.point + hit.normal * invalidSurfaceOffset
+                : check.Pose.position;
+            previewTransform.SetPositionAndRotation(position, check.Pose.rotation);
         }
 
-        SetMaterial(isValid ? validMaterial : invalidMaterial);
+        SetMaterial(check.IsValid ? validMaterial : invalidMaterial);
         SetVisible(true);
     }
 
@@ -52,15 +42,6 @@ public sealed class PortalPlacementPreview : MonoBehaviour
     private void OnValidate()
     {
         invalidSurfaceOffset = Mathf.Max(0f, invalidSurfaceOffset);
-    }
-
-    private Pose GetInvalidSurfacePose(RaycastHit hit)
-    {
-        Vector3 up = Mathf.Abs(Vector3.Dot(hit.normal, Vector3.up)) > 0.99f
-            ? Vector3.forward
-            : Vector3.up;
-        Quaternion rotation = Quaternion.LookRotation(hit.normal, up);
-        return new Pose(hit.point + hit.normal * invalidSurfaceOffset, rotation);
     }
 
     private void SetVisible(bool visible)

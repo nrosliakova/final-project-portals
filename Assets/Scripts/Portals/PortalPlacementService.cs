@@ -53,6 +53,7 @@ public sealed class PortalPlacementService : MonoBehaviour
     [SerializeField] private PortalPlacementSurface initialOrangeSurface;
 
     [Header("Validation")]
+    [SerializeField] private Material portalableWallMaterial;
     [SerializeField] private LayerMask blockingLayers = ~0;
     [SerializeField] private float exitRadius = 0.5f;
     [SerializeField] private float exitHeight = 2f;
@@ -62,6 +63,8 @@ public sealed class PortalPlacementService : MonoBehaviour
         new Dictionary<PortalPlacementSurface, PortalEndpoint>();
     private readonly Dictionary<PortalEndpoint, PortalPlacementSurface> portalSurfaces =
         new Dictionary<PortalEndpoint, PortalPlacementSurface>();
+    private readonly Dictionary<MeshCollider, PortalWallGeometry> wallGeometries =
+        new Dictionary<MeshCollider, PortalWallGeometry>();
 
     private Pose initialBluePose;
     private Pose initialOrangePose;
@@ -101,9 +104,42 @@ public sealed class PortalPlacementService : MonoBehaviour
 
     public PortalPlacementCheck CheckPlacement(PortalSlot slot, PortalPlacementSurface surface)
     {
+        Pose pose = surface != null ? surface.GetPlacementPose() : default;
+        return CheckPlacement(slot, pose, surface, default);
+    }
+
+    public PortalPlacementCheck CheckPlacement(PortalSlot slot, RaycastHit hit)
+    {
+        return CheckPlacement(slot, hit, out _);
+    }
+
+    private PortalPlacementCheck CheckPlacement(
+        PortalSlot slot, RaycastHit hit, out PortalPlacementSurface surface)
+    {
+        Collider collider = hit.collider;
+        surface = collider != null ? collider.GetComponentInParent<PortalPlacementSurface>() : null;
+        if (collider == null)
+        {
+            return PortalPlacementCheck.Invalid(default, PortalPlacementFailure.MissingSurface);
+        }
+
+        if (surface != null)
+        {
+            return CheckPlacement(slot, surface);
+        }
+
+        Vector3 up = Mathf.Abs(Vector3.Dot(hit.normal, Vector3.up)) > 0.99f
+            ? Vector3.forward
+            : Vector3.up;
+        Pose pose = new Pose(hit.point + hit.normal * 0.03f, Quaternion.LookRotation(hit.normal, up));
+        return CheckPlacement(slot, pose, null, hit);
+    }
+
+    private PortalPlacementCheck CheckPlacement(
+        PortalSlot slot, Pose pose, PortalPlacementSurface surface, RaycastHit hit)
+    {
         Initialize();
 
-        Pose pose = surface != null ? surface.GetPlacementPose() : default;
         if (controlledPair == null)
         {
             return PortalPlacementCheck.Invalid(pose, PortalPlacementFailure.MissingPair);
@@ -115,12 +151,14 @@ public sealed class PortalPlacementService : MonoBehaviour
             return PortalPlacementCheck.Invalid(pose, PortalPlacementFailure.MissingPortal);
         }
 
-        if (surface == null)
+        PortalWallGeometry wall = null;
+        if (surface == null && !TryGetWall(hit, out wall))
         {
             return PortalPlacementCheck.Invalid(pose, PortalPlacementFailure.MissingSurface);
         }
 
-        if (occupiedSurfaces.TryGetValue(surface, out PortalEndpoint occupant) && occupant != portal)
+        if (surface != null && occupiedSurfaces.TryGetValue(surface, out PortalEndpoint occupant) &&
+            occupant != portal)
         {
             return PortalPlacementCheck.Invalid(pose, PortalPlacementFailure.SurfaceOccupied);
         }
@@ -132,7 +170,10 @@ public sealed class PortalPlacementService : MonoBehaviour
         }
 
         Vector2 requiredSize = footprint.Size;
-        if (surface.AvailableSize.x < requiredSize.x || surface.AvailableSize.y < requiredSize.y)
+        bool fits = surface != null
+            ? surface.AvailableSize.x >= requiredSize.x && surface.AvailableSize.y >= requiredSize.y
+            : wall.Fits(hit, pose.rotation, requiredSize);
+        if (!fits)
         {
             return PortalPlacementCheck.Invalid(pose, PortalPlacementFailure.SurfaceTooSmall);
         }
@@ -152,7 +193,18 @@ public sealed class PortalPlacementService : MonoBehaviour
 
     public PortalPlacementCheck TryPlace(PortalSlot slot, PortalPlacementSurface surface)
     {
-        PortalPlacementCheck check = CheckPlacement(slot, surface);
+        return ApplyPlacement(slot, surface, CheckPlacement(slot, surface));
+    }
+
+    public PortalPlacementCheck TryPlace(PortalSlot slot, RaycastHit hit)
+    {
+        PortalPlacementCheck check = CheckPlacement(slot, hit, out PortalPlacementSurface surface);
+        return ApplyPlacement(slot, surface, check);
+    }
+
+    private PortalPlacementCheck ApplyPlacement(
+        PortalSlot slot, PortalPlacementSurface surface, PortalPlacementCheck check)
+    {
         if (!check.IsValid)
         {
             return check;
@@ -166,8 +218,15 @@ public sealed class PortalPlacementService : MonoBehaviour
         }
 
         portal.transform.SetPositionAndRotation(check.Pose.position, check.Pose.rotation);
-        portalSurfaces[portal] = surface;
-        occupiedSurfaces[surface] = portal;
+        if (surface != null)
+        {
+            portalSurfaces[portal] = surface;
+            occupiedSurfaces[surface] = portal;
+        }
+        else
+        {
+            portalSurfaces.Remove(portal);
+        }
         portal.gameObject.SetActive(true);
         Physics.SyncTransforms();
         return check;
@@ -280,7 +339,7 @@ public sealed class PortalPlacementService : MonoBehaviour
     {
         foreach (Collider candidate in overlaps)
         {
-            if (candidate == null || targetSurface.OwnsCollider(candidate))
+            if (candidate == null || (targetSurface != null && targetSurface.OwnsCollider(candidate)))
             {
                 continue;
             }
@@ -305,6 +364,24 @@ public sealed class PortalPlacementService : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool TryGetWall(RaycastHit hit, out PortalWallGeometry wall)
+    {
+        wall = null;
+        if (portalableWallMaterial == null || Mathf.Abs(hit.normal.y) > 0.01f ||
+            !(hit.collider is MeshCollider collider) || collider.sharedMesh == null)
+        {
+            return false;
+        }
+
+        if (!wallGeometries.TryGetValue(collider, out wall) || wall.Mesh != collider.sharedMesh)
+        {
+            wall = new PortalWallGeometry(collider, portalableWallMaterial);
+            wallGeometries[collider] = wall;
+        }
+
+        return wall.AllowsTriangle(hit.triangleIndex);
     }
 
     private void OnValidate()
