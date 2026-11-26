@@ -1,0 +1,68 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class PlayerLook : MonoBehaviour
+{
+    [SerializeField] private Transform playerCamera;
+    [SerializeField] private float sensitivity = 0.1f;
+
+    private float verticalRotation;
+    private float startVerticalRotation;
+
+    private void OnEnable()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void Start()
+    {
+        if (playerCamera == null) return;
+
+        startVerticalRotation = Mathf.DeltaAngle(0f, playerCamera.localEulerAngles.x);
+        verticalRotation = startVerticalRotation;
+    }
+
+    private void Update()
+    {
+        if (Keyboard.current != null && Keyboard.current.leftAltKey.isPressed)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        if (Mouse.current == null || playerCamera == null)
+        {
+            return;
+        }
+
+        Vector2 mouseMovement = Mouse.current.delta.ReadValue();
+
+        transform.Rotate(Vector3.up * mouseMovement.x * sensitivity);
+
+        verticalRotation -= mouseMovement.y * sensitivity;
+        verticalRotation = Mathf.Clamp(verticalRotation, -80f, 80f);
+
+        playerCamera.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+    }
+
+    private void OnDisable()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void ResetLook()
+    {
+        verticalRotation = startVerticalRotation;
+
+        if (playerCamera != null)
+        {
+            playerCamera.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+        }
+    }
+}
