@@ -16,10 +16,20 @@ namespace Player
 
         private PickupObject heldObject;
         private CharacterController controller;
+        private PlayerPortalTraveller portalTraveller;
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
+            portalTraveller = GetComponent<PlayerPortalTraveller>();
+        }
+
+        private void OnEnable()
+        {
+            if (portalTraveller != null)
+            {
+                portalTraveller.BeforeTeleport += DropHeldObject;
+            }
         }
 
         private void Update()
@@ -110,6 +120,11 @@ namespace Player
 
         private void OnDisable()
         {
+            if (portalTraveller != null)
+            {
+                portalTraveller.BeforeTeleport -= DropHeldObject;
+            }
+
             if (hintPanel != null)
             {
                 hintPanel.SetActive(false);
