@@ -18,6 +18,8 @@ namespace Player
         private CharacterController controller;
         private PlayerPortalTraveller portalTraveller;
 
+        public bool IsHoldingObject => heldObject != null;
+
         private void Awake()
         {
             controller = GetComponent<CharacterController>();

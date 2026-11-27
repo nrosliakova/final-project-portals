@@ -10,9 +10,9 @@ public sealed class PortalPlacementPreview : MonoBehaviour
     [SerializeField] private Material invalidMaterial;
     [SerializeField] private float invalidSurfaceOffset = 0.02f;
 
-    private void Update()
+    private void LateUpdate()
     {
-        if (placementInput == null || !placementInput.isActiveAndEnabled ||
+        if (placementInput == null || !placementInput.CanPlacePortals ||
             placementInput.PlacementService == null || !placementInput.TryGetAimHit(out RaycastHit hit))
         {
             SetVisible(false);
