@@ -420,3 +420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5396e8af7b1b4876b35c0e4e5b0793ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Door_Button.PickupCube
+  pickupSound: {fileID: 8300000, guid: eaaf6109c77e30a41addb3244e954d25, type: 3}
+  dropSound: {fileID: 8300000, guid: f4a81b2ee6078d74f96fa08fa0062f6b, type: 3}
+  collisionSound: {fileID: 8300000, guid: 9f77cf9edaaf7fd4f9b92bac1b037b94, type: 3}
+  minImpactSpeed: 1

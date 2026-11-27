@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Managers;
+using UnityEngine;
 
 namespace Door_Button
 {
@@ -11,7 +12,12 @@ namespace Door_Button
         private RigidbodyConstraints originalConstraints;
         private bool originalGravity;
         private bool isHeld;
-
+        
+        [SerializeField] private AudioClip pickupSound;
+        [SerializeField] private AudioClip dropSound;
+        [SerializeField] private AudioClip collisionSound;
+        
+        [SerializeField] private float minImpactSpeed = 1f;
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
@@ -30,12 +36,16 @@ namespace Door_Button
                 rb.useGravity = false;
                 rb.constraints |= RigidbodyConstraints.FreezeRotation;
                 Physics.IgnoreCollision(cubeCollider, playerCollider, true);
+                
+                SoundFXManager.instance.PlaySoundFXClip(pickupSound, transform, 1);
             }
             else
             {
                 rb.useGravity = originalGravity;
                 rb.constraints = originalConstraints;
                 rb.linearVelocity = Vector3.zero;
+
+                SoundFXManager.instance.PlaySoundFXClip(dropSound, transform, 1);
             }
         }
 
@@ -43,6 +53,11 @@ namespace Door_Button
         {
             rb.linearVelocity = Vector3.ClampMagnitude(
                 (target - rb.position) * 10f, speed);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            SoundFXManager.instance.PlaySoundFXClip(collisionSound, transform, 1);
         }
 
         private void FixedUpdate()
