@@ -11,11 +11,16 @@ namespace Door_Button
         private RigidbodyConstraints originalConstraints;
         private bool originalGravity;
         private bool isHeld;
-
+        [SerializeField] private AudioClip pickupSound;
+        [SerializeField] private AudioClip dropSound;
+        [SerializeField] private AudioClip collisionSound;
+        [SerializeField] private float minImpactSpeed = 1f;
+        private AudioSource audioSource;
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
             cubeCollider = GetComponent<Collider>();
+            audioSource = GetComponent<AudioSource>();
         }
 
         public void SetHeld(bool held, Collider player = null)
@@ -30,12 +35,22 @@ namespace Door_Button
                 rb.useGravity = false;
                 rb.constraints |= RigidbodyConstraints.FreezeRotation;
                 Physics.IgnoreCollision(cubeCollider, playerCollider, true);
+
+                if (audioSource != null && pickupSound != null)
+                {
+                    audioSource.PlayOneShot(pickupSound);
+                }
             }
             else
             {
                 rb.useGravity = originalGravity;
                 rb.constraints = originalConstraints;
                 rb.linearVelocity = Vector3.zero;
+
+                if (audioSource != null && dropSound != null)
+                {
+                    audioSource.PlayOneShot(dropSound);
+                }
             }
         }
 
@@ -43,6 +58,15 @@ namespace Door_Button
         {
             rb.linearVelocity = Vector3.ClampMagnitude(
                 (target - rb.position) * 10f, speed);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (audioSource != null && collisionSound != null &&
+                collision.relativeVelocity.magnitude >= minImpactSpeed)
+            {
+                audioSource.PlayOneShot(collisionSound);
+            }
         }
 
         private void FixedUpdate()
