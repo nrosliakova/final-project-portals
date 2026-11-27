@@ -14084,6 +14084,8 @@ MonoBehaviour:
   raycastMask:
     serializedVersion: 2
     m_Bits: 55
+  placementSuccessClip: {fileID: 8300000, guid: a34330452bc3af248b9170a507a85d6f, type: 3}
+  placementFailureClip: {fileID: 8300000, guid: 759f5b3d2544bde49aa18f2a2b06f048, type: 3}
 --- !u!114 &1246337556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14118,6 +14120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f23cb0f47347f7a8c70ab6ff30821f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPortalTraveller
+  teleportClip: {fileID: 8300000, guid: bb99209e11382ad418f803bfba6ed32f, type: 3}
 --- !u!114 &1246337559
 MonoBehaviour:
   m_ObjectHideFlags: 0

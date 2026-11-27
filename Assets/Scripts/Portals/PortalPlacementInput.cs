@@ -1,3 +1,5 @@
+using Managers;
+using Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,13 +10,24 @@ public sealed class PortalPlacementInput : MonoBehaviour
     [SerializeField] private PortalPlacementService placementService;
     [SerializeField] private float maxDistance = 20f;
     [SerializeField] private LayerMask raycastMask = ~0;
+    [SerializeField] private AudioClip placementSuccessClip;
+    [SerializeField] private AudioClip placementFailureClip;
+
+    private PlayerPickup playerPickup;
 
     public PortalPlacementService PlacementService => placementService;
     public PortalSlot ActiveSlot { get; private set; } = PortalSlot.Blue;
+    public bool CanPlacePortals => isActiveAndEnabled &&
+        (playerPickup == null || !playerPickup.IsHoldingObject);
 
-    private void Update()
+    private void Awake()
     {
-        if (Mouse.current == null)
+        playerPickup = GetComponent<PlayerPickup>();
+    }
+
+    private void LateUpdate()
+    {
+        if (!CanPlacePortals || Mouse.current == null)
         {
             return;
         }
@@ -31,17 +44,34 @@ public sealed class PortalPlacementInput : MonoBehaviour
 
         if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
-            TryPlace(PortalSlot.Blue);
+            TryPlaceWithFeedback(PortalSlot.Blue);
         }
 
         if (Mouse.current.rightButton.wasReleasedThisFrame)
         {
-            TryPlace(PortalSlot.Orange);
+            TryPlaceWithFeedback(PortalSlot.Orange);
+        }
+    }
+
+    private void TryPlaceWithFeedback(PortalSlot slot)
+    {
+        PortalPlacementCheck result = TryPlace(slot);
+        AudioClip clip = result.IsValid ? placementSuccessClip : placementFailureClip;
+        SoundFXManager soundManager = SoundFXManager.instance;
+
+        if (clip != null && soundManager != null)
+        {
+            soundManager.PlaySoundFXClip(clip, transform, 1f);
         }
     }
 
     public PortalPlacementCheck TryPlace(PortalSlot slot)
     {
+        if (!CanPlacePortals)
+        {
+            return PortalPlacementCheck.Invalid(default, PortalPlacementFailure.InputBlocked);
+        }
+
         if (placementService == null || !TryGetAimHit(out RaycastHit hit))
         {
             return PortalPlacementCheck.Invalid(default, PortalPlacementFailure.MissingSurface);

@@ -17,7 +17,8 @@ public enum PortalPlacementFailure
     SurfaceOccupied,
     SurfaceTooSmall,
     PortalAreaBlocked,
-    ExitAreaBlocked
+    ExitAreaBlocked,
+    InputBlocked
 }
 
 public readonly struct PortalPlacementCheck

@@ -1,10 +1,13 @@
 using System;
+using Managers;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(CharacterController), typeof(PlayerMovement))]
 public sealed class PlayerPortalTraveller : MonoBehaviour, IPortalTraveller
 {
+    [SerializeField] private AudioClip teleportClip;
+
     private CharacterController characterController;
     private PlayerMovement playerMovement;
     private PortalEndpoint blockedPortal;
@@ -59,6 +62,13 @@ public sealed class PlayerPortalTraveller : MonoBehaviour, IPortalTraveller
         blockedPortal = transfer.Destination;
         playerMovement.Teleport(transfer.Position, transfer.RotationDelta);
         Physics.SyncTransforms();
+
+        SoundFXManager soundManager = SoundFXManager.instance;
+        if (teleportClip != null && soundManager != null)
+        {
+            soundManager.PlaySoundFXClip(teleportClip, transform, 1f);
+        }
+
         return true;
     }
 
